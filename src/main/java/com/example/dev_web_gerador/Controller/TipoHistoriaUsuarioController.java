@@ -27,7 +27,7 @@ public class TipoHistoriaUsuarioController {
     @PostMapping
     public TipoHistoriaUsuario criarTipoHistoriaUsuario(@RequestBody TipoHistoriaUsuarioInputDTO tipoHistoriaUsuarioInputDTO) {
         var tipoHistoriaUsuario = new TipoHistoriaUsuario();
-        Long tipoEpicoId = tipoHistoriaUsuarioInputDTO.tipo_epico();
+        Long tipoEpicoId = tipoHistoriaUsuarioInputDTO.tipo_epico_id();
 
 
         Optional<TipoEpico> tipoEpicoOptional = tipoEpicoRepository.findById(tipoEpicoId);
@@ -74,7 +74,7 @@ public class TipoHistoriaUsuarioController {
 
             TipoHistoriaUsuario tipoHistoriaUsuario = tipoHistoriaUsuarioOptional.get();
 
-            Long tipoEpicoId = tipoHistoriaUsuarioInputDTO.tipo_epico();
+            Long tipoEpicoId = tipoHistoriaUsuarioInputDTO.tipo_epico_id();
 
             Optional<TipoEpico> tipoEpicoOptional = tipoEpicoRepository.findById(tipoEpicoId);
 

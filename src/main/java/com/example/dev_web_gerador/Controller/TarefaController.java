@@ -67,8 +67,6 @@ public class TarefaController {
 
     private Tarefa criarTarefa(HistoriaUsuario historiaUsuario, TipoHistoriaUsuario tipoHistoriaUsuario, String entidade, TipoTarefa tipoTarefa) {
         Tarefa tarefa = new Tarefa();
-        //HistoriaUsuario historiausuario = historiaUsuarioRepository.findById(tarefaInputDTO.HistoriaUsuarioId()).get();
-        //TipoTarefa tipoTarefa = tipoHistoriaUsuario.getTipoTarefa();
 
         tarefa.setTitulo(tipoTarefa.getDescricao());
         tarefa.setDescricao(tipoHistoriaUsuario.getDescricao().concat(" ").concat(tipoTarefa.getDescricao()).concat(" de ").concat(entidade));
@@ -81,7 +79,7 @@ public class TarefaController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Tarefa> atualizarTarefa(
-            @PathVariable long id,
+            @PathVariable(value = "id") long id,
             @RequestBody TarefaInputDTO tarefaInputDTO) {
 
         Optional<Tarefa> tarefaOptional = tarefaRepository.findById(id);
@@ -97,8 +95,8 @@ public class TarefaController {
             Optional<HistoriaUsuario> historiaUsuarioOptional = historiaUsuarioRepository.findById(historiaUsuarioId);
 
             if (tipoTarefaOptional.isPresent()) {
+                tarefa.setTipoTarefa(tipoTarefaOptional.get());
                 if (historiaUsuarioOptional.isPresent()) {
-                    tarefa.setTipoTarefa(tipoTarefaOptional.get());
                     tarefa.setHistoriaUsuario(historiaUsuarioOptional.get());
                 }
             } else {

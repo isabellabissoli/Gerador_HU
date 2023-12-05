@@ -2,6 +2,7 @@ package com.example.dev_web_gerador.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.micrometer.common.lang.Nullable;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -31,9 +32,11 @@ public class Epico {
     private TipoEpico tipoEpico;
 
     @ManyToOne
+    @Nullable
     private Projeto projeto;
 
     @ManyToOne
+    @Nullable
     private Epico epicoPai;
 
     @OneToMany(mappedBy = "epicoPai")

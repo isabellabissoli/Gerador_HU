@@ -2,6 +2,7 @@ package com.example.dev_web_gerador.Model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.micrometer.common.lang.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -28,6 +29,7 @@ public class Tarefa {
 
 
     @ManyToOne
+    @Nullable
     private Tarefa tarefaPai;
 
     @OneToMany(mappedBy = "tarefaPai")

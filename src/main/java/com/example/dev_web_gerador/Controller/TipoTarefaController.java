@@ -29,7 +29,7 @@ public class TipoTarefaController {
         Long tipoHistoriaUsuarioId = tipoTarefaInputDTO.tipoHistoriaUsuario_id();
 
         Optional<TipoHistoriaUsuario> tipoHistoriaUsuarioOptional = tipoHistoriaUsuarioRepository.findById(tipoHistoriaUsuarioId);
-        Optional<TipoTarefa> tipoTarefaPai = tipoTarefaRepository.findById(tipoTarefaInputDTO.tipoTarefaPai());
+        Optional<TipoTarefa> tipoTarefaPai = tipoTarefaRepository.findById(tipoTarefaInputDTO.tipoTarefaPai_id());
 
         if(tipoTarefaPai.isPresent()){
             tipoTarefa.setTipoTarefaPai(tipoTarefaPai.get());
@@ -63,7 +63,7 @@ public class TipoTarefaController {
 
 
         Optional<TipoTarefa> tipoTarefaOptional = tipoTarefaRepository.findById(id);
-        Optional<TipoTarefa> tipoTarefaPai = tipoTarefaRepository.findById(tipoTarefaInputDTO.tipoTarefaPai());
+        Optional<TipoTarefa> tipoTarefaPai = tipoTarefaRepository.findById(tipoTarefaInputDTO.tipoTarefaPai_id());
 
         if (tipoTarefaOptional.isPresent()) {
 
