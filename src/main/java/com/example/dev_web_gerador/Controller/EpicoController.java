@@ -1,12 +1,8 @@
 package com.example.dev_web_gerador.Controller;
 
 import com.example.dev_web_gerador.DTO.EpicoInputDTO;
-import com.example.dev_web_gerador.Model.Epico;
-import com.example.dev_web_gerador.Model.Projeto;
-import com.example.dev_web_gerador.Model.TipoEpico;
-import com.example.dev_web_gerador.Repository.EpicoRepository;
-import com.example.dev_web_gerador.Repository.ProjetoRepository;
-import com.example.dev_web_gerador.Repository.TipoEpicoRepository;
+import com.example.dev_web_gerador.Model.*;
+import com.example.dev_web_gerador.Repository.*;
 import com.example.dev_web_gerador.codes.StatusCode;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,9 +27,15 @@ public class EpicoController {
     @Autowired
     ProjetoRepository projetoRepository;
 
+    @Autowired
+    HistoriaUsuarioRepository historiaUsuarioRepository;
+
+    @Autowired
+    TipoHistoriaUsuarioRepository tipoHistoriaUsuarioRepository;
+
 
     @PostMapping
-    public Epico criarEpico(@RequestBody EpicoInputDTO epicoInputDTO) {
+    public ResponseEntity<Epico> criarEpico(@RequestBody EpicoInputDTO epicoInputDTO) {
         var epico = new Epico();
         Long tipoEpicoId = epicoInputDTO.tipoEpico_id();
 
@@ -53,8 +56,48 @@ public class EpicoController {
 
         BeanUtils.copyProperties(epicoInputDTO, epico);
 
+        Epico epicoSalvo = epicoRepository.save(epico);
+        gerarHistoriaUsuario(epicoSalvo.getId());
 
-        return epicoRepository.save(epico);
+        return ResponseEntity.status(HttpStatus.CREATED).body(epicoSalvo);
+    }
+
+
+    public ResponseEntity<List<HistoriaUsuario>> gerarHistoriaUsuario(long epico_id) {
+        Epico epico = epicoRepository.findById(epico_id).get(); //Prourando o epico pelo id passado
+        Long tipoEpicoId = epico.getTipoEpico().getId(); //Armazenando o id
+
+
+        List<TipoHistoriaUsuario> tipoHistoriaUsuario = tipoHistoriaUsuarioRepository.findByTipoEpicoId(tipoEpicoId);
+
+        String epicoDescricao = epico.getDescricao(); //Armazenando a desccrição do épico para ser modificada e adicionada no hu
+        List<HistoriaUsuario> historias = new ArrayList<HistoriaUsuario>();
+        tipoHistoriaUsuario.forEach(tipo -> { //Pegando ccada historia retornada na lista
+            String palavra = epicoDescricao.replaceAll("(?<=\\bdesejo\\s)\\w+", tipo.getDescricao()); //Substituindo a palavra desejo pelo verbo
+
+            HistoriaUsuario historiaUsuario = salvarHistoriaUsuario(epico.getId(), epico, palavra, tipo.getId());
+
+            historias.add(historiaUsuario);
+
+        });
+
+        return ResponseEntity.ok(historias);
+    }
+
+
+    private HistoriaUsuario salvarHistoriaUsuario(long epico_id,Epico epico, String descricao, long tipoHistoriaUsuario) {
+        HistoriaUsuario historiaUsuario = new HistoriaUsuario();
+
+        Optional<Epico> epicoOptional = epicoRepository.findById(epico.getId());
+        Optional<TipoHistoriaUsuario> tipoHistoriaUsuarioOptional = tipoHistoriaUsuarioRepository.findById(tipoHistoriaUsuario);
+        historiaUsuario.setCategoria(epico.getCategoria());
+        historiaUsuario.setDescricao(descricao);
+        historiaUsuario.setRelevancia(epico.getRelevancia());
+        historiaUsuario.setTitulo(epico.getTitulo());
+        historiaUsuario.setEpico(epicoOptional.get());
+        historiaUsuario.setTipoHistoriaUsuario(tipoHistoriaUsuarioOptional.get());
+
+        return historiaUsuarioRepository.save(historiaUsuario);
     }
 
     @GetMapping
@@ -120,7 +163,3 @@ public class EpicoController {
         return ResponseEntity.status(HttpStatus.OK).body(StatusCode.EPIC_REMOVED.getCode());
     }
 }
-
-
-
-

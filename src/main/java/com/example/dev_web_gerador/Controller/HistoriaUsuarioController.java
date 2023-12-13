@@ -35,47 +35,6 @@ public class HistoriaUsuarioController {
         return historiaUsuarioRepository.findAll();
     }
 
-    @PostMapping("/gerar/{epico_id}")
-    public ResponseEntity<List<HistoriaUsuario>> gerarHistoriaUsuario(@PathVariable(value = "epico_id") long epico_id) {
-        Epico epico = epicoRepository.findById(epico_id).get(); //Prourando o epico pelo id passado
-        Long tipoEpicoId = epico.getTipoEpico().getId(); //Armazenando o id
-
-        if(tipoEpicoId == null){ //Verificação se o id existe
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        List<TipoHistoriaUsuario> tipoHistoriaUsuario = tipoHistoriaUsuarioRepository.findByTipoEpicoId(tipoEpicoId);
-
-        String epicoDescricao = epico.getDescricao(); //Armazenando a desccrição do épico para ser modificada e adicionada no hu
-        List<HistoriaUsuario> historias = new ArrayList<HistoriaUsuario>();
-        tipoHistoriaUsuario.forEach(tipo -> { //Pegando ccada historia retornada na lista
-            String palavra = epicoDescricao.replaceAll("(?<=\\bdesejo\\s)\\w+", tipo.getDescricao()); //Substituindo a palavra desejo pelo verbo
-
-                HistoriaUsuario historiaUsuario = salvarHistoriaUsuario(epico.getId(), epico, palavra, tipo.getId());
-
-                historias.add(historiaUsuario);
-
-        });
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(historias);
-    }
-
-
-    private HistoriaUsuario salvarHistoriaUsuario(long epico_id,Epico epico, String descricao, long tipoHistoriaUsuario) {
-        HistoriaUsuario historiaUsuario = new HistoriaUsuario();
-
-        Optional<Epico> epicoOptional = epicoRepository.findById(epico.getId());
-        Optional<TipoHistoriaUsuario> tipoHistoriaUsuarioOptional = tipoHistoriaUsuarioRepository.findById(tipoHistoriaUsuario);
-        historiaUsuario.setCategoria(epico.getCategoria());
-        historiaUsuario.setDescricao(descricao);
-        historiaUsuario.setRelevancia(epico.getRelevancia());
-        historiaUsuario.setTitulo(epico.getTitulo());
-        historiaUsuario.setEpico(epicoOptional.get());
-        historiaUsuario.setTipoHistoriaUsuario(tipoHistoriaUsuarioOptional.get());
-
-        return historiaUsuarioRepository.save(historiaUsuario);
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<Object> historiaUsuarioId(@PathVariable long id) {
         Optional<HistoriaUsuario> historiaUsuario = historiaUsuarioRepository.findById(id);
