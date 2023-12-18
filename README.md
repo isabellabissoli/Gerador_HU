@@ -1,4 +1,4 @@
-<h1 align='center'> Gerador_HU </h1>
+<h1 align='center'> Gerador HU </h1>
 <h1 align='center'> trabalho prático de implementação de DW</h1>
 
   
